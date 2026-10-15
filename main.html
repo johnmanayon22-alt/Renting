@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BlueNest Rentals – Find Your Next Home</title>
+<meta name="description" content="Browse rental houses and apartments with clear monthly prices and locations.">
+<style>
+  :root{
+    --blue-900:#0b2a5b;
+    --blue-700:#1249a8;
+    --blue-600:#1a5fd1;
+    --blue-500:#2f7bf0;
+    --blue-100:#e6f0ff;
+    --blue-50:#f3f8ff;
+    --ink:#0f1b33;
+    --muted:#5b6b86;
+    --line:#dbe5f5;
+    --white:#fff;
+    --radius:16px;
+    --shadow:0 10px 30px rgba(18,73,168,.12);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;color:var(--ink);background:var(--white);line-height:1.6}
+  img{max-width:100%;display:block}
+  a{color:inherit;text-decoration:none}
+  .container{width:min(1160px,92%);margin-inline:auto}
+
+  /* Header */
+  header{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.95);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+  .nav{display:flex;align-items:center;justify-content:space-between;height:68px}
+  .logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:1.25rem;color:var(--blue-700)}
+  .logo svg{width:30px;height:30px}
+  nav ul{display:flex;gap:28px;list-style:none;font-weight:500}
+  nav a:hover{color:var(--blue-600)}
+  .btn{display:inline-block;border:0;cursor:pointer;font:inherit;font-weight:600;padding:12px 22px;border-radius:999px;transition:.2s}
+  .btn-primary{background:var(--blue-600);color:#fff}
+  .btn-primary:hover{background:var(--blue-700);transform:translateY(-1px)}
+  .btn-light{background:#fff;color:var(--blue-700)}
+  .btn-light:hover{background:var(--blue-100)}
+  .menu-toggle{display:none;background:none;border:0;font-size:1.6rem;color:var(--blue-700);cursor:pointer}
+
+  /* Hero */
+  .hero{
+    position:relative;color:#fff;padding:110px 0 150px;
+    background:
+      linear-gradient(120deg,rgba(11,42,91,.88),rgba(26,95,209,.55)),
+      url("https://images.unsplash.com/photo-1628624747186-a941c476b7ef?auto=format&fit=crop&w=1800&q=80") center/cover no-repeat,
+      var(--blue-900);
+  }
+  .hero h1{font-size:clamp(2.2rem,5vw,3.6rem);line-height:1.12;max-width:700px;font-weight:800}
+  .hero p{margin-top:18px;max-width:560px;font-size:1.1rem;color:#dbe8ff}
+  .hero-stats{display:flex;gap:36px;margin-top:34px;flex-wrap:wrap}
+  .hero-stats b{display:block;font-size:1.7rem}
+  .hero-stats span{color:#cfe0ff;font-size:.9rem}
+
+  /* Search */
+  .search{
+    margin-top:-70px;position:relative;z-index:5;background:#fff;border-radius:20px;
+    box-shadow:var(--shadow);padding:22px;display:grid;
+    grid-template-columns:1.2fr 1fr 1fr auto;gap:14px;align-items:end;border:1px solid var(--line)
+  }
+  .field label{display:block;font-size:.78rem;font-weight:700;color:var(--blue-700);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px}
+  .field select{width:100%;padding:13px 14px;border:1px solid var(--line);border-radius:12px;font:inherit;background:var(--blue-50);color:var(--ink)}
+  .field select:focus{outline:2px solid var(--blue-500);outline-offset:1px}
+
+  /* Sections */
+  section{padding:84px 0}
+  .eyebrow{color:var(--blue-600);font-weight:700;text-transform:uppercase;letter-spacing:.08em;font-size:.8rem}
+  .section-head{display:flex;justify-content:space-between;align-items:end;gap:20px;flex-wrap:wrap;margin-bottom:36px}
+  .section-head h2{font-size:clamp(1.6rem,3vw,2.3rem);line-height:1.2;margin-top:6px}
+  .section-head p{color:var(--muted);max-width:460px}
+
+  /* Listings */
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:26px}
+  .card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;transition:.25s;display:flex;flex-direction:column}
+  .card:hover{transform:translateY(-6px);box-shadow:var(--shadow)}
+  .card .photo{position:relative;aspect-ratio:4/3;overflow:hidden;background:var(--blue-100)}
+  .card .photo img{width:100%;height:100%;object-fit:cover;transition:transform .5s}
+  .card:hover .photo img{transform:scale(1.06)}
+  .tag{position:absolute;top:14px;left:14px;background:var(--blue-600);color:#fff;font-size:.75rem;font-weight:700;padding:5px 12px;border-radius:999px}
+  .card .body{padding:20px;display:flex;flex-direction:column;gap:10px;flex:1}
+  .price{font-size:1.5rem;font-weight:800;color:var(--blue-700)}
+  .price small{font-size:.9rem;font-weight:500;color:var(--muted)}
+  .card h3{font-size:1.1rem}
+  .loc{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:.92rem}
+  .loc svg{width:16px;height:16px;flex:none;color:var(--blue-500)}
+  .specs{display:flex;gap:18px;padding-top:12px;margin-top:auto;border-top:1px solid var(--line);font-size:.88rem;color:var(--muted)}
+  .specs b{color:var(--ink)}
+  .empty{display:none;text-align:center;padding:40px;color:var(--muted);background:var(--blue-50);border-radius:var(--radius)}
+
+  /* Price ranges */
+  .ranges{background:var(--blue-50)}
+  .range-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+  .range{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:28px;transition:.2s}
+  .range:hover{border-color:var(--blue-500);box-shadow:var(--shadow)}
+  .range .amt{font-size:1.8rem;font-weight:800;color:var(--blue-700);margin:6px 0}
+  .range p{color:var(--muted);font-size:.95rem}
+  .range a{display:inline-block;margin-top:14px;color:var(--blue-600);font-weight:600}
+
+  /* Locations */
+  .loc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+  .loc-card{position:relative;border-radius:var(--radius);overflow:hidden;aspect-ratio:3/4;color:#fff;background:var(--blue-900)}
+  .loc-card img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .5s}
+  .loc-card:hover img{transform:scale(1.07)}
+  .loc-card::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(11,42,91,.9),rgba(11,42,91,0) 60%)}
+  .loc-card div{position:absolute;left:18px;bottom:16px;z-index:2}
+  .loc-card h3{font-size:1.15rem}
+  .loc-card span{font-size:.85rem;color:#cfe0ff}
+
+  /* Why */
+  .why-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
+  .why{padding:24px;border-radius:var(--radius);background:var(--blue-50);border:1px solid var(--line)}
+  .why .ic{width:46px;height:46px;border-radius:12px;background:var(--blue-600);color:#fff;display:grid;place-items:center;margin-bottom:14px}
+  .why .ic svg{width:24px;height:24px}
+  .why h3{font-size:1.05rem;margin-bottom:6px}
+  .why p{color:var(--muted);font-size:.93rem}
+
+  /* CTA */
+  .cta{background:linear-gradient(120deg,var(--blue-900),var(--blue-600));color:#fff;border-radius:24px;padding:56px;display:flex;justify-content:space-between;align-items:center;gap:30px;flex-wrap:wrap}
+  .cta h2{font-size:clamp(1.5rem,3vw,2.1rem);max-width:560px;line-height:1.25}
+  .cta p{color:#cfe0ff;margin-top:8px}
+
+  footer{background:var(--blue-900);color:#b9ccf0;padding:56px 0 26px}
+  .foot{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:30px}
+  footer h4{color:#fff;margin-bottom:12px}
+  footer ul{list-style:none}
+  footer li{margin:7px 0;font-size:.93rem}
+  footer a:hover{color:#fff}
+  .copy{border-top:1px solid rgba(255,255,255,.12);margin-top:36px;padding-top:20px;font-size:.85rem;text-align:center}
+
+  /* Responsive */
+  @media (max-width:980px){
+    .grid,.range-grid{grid-template-columns:repeat(2,1fr)}
+    .loc-grid,.why-grid{grid-template-columns:repeat(2,1fr)}
+    .search{grid-template-columns:1fr 1fr}
+    .foot{grid-template-columns:1fr 1fr}
+  }
+  @media (max-width:680px){
+    nav ul{display:none;position:absolute;top:68px;left:0;right:0;background:#fff;flex-direction:column;gap:0;border-bottom:1px solid var(--line)}
+    nav ul.open{display:flex}
+    nav li{padding:14px 4%;border-top:1px solid var(--line)}
+    .menu-toggle{display:block}
+    .nav .btn{display:none}
+    .hero{padding:80px 0 120px}
+    .grid,.range-grid,.search,.why-grid{grid-template-columns:1fr}
+    .loc-grid{grid-template-columns:1fr 1fr;gap:14px}
+    .cta{padding:34px 26px}
+    .foot{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="container nav">
+    <a href="#top" class="logo" aria-label="BlueNest Rentals home">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg>
+      BlueNest
+    </a>
+    <nav>
+      <ul id="menu">
+        <li><a href="#listings">Properties</a></li>
+        <li><a href="#prices">Price Ranges</a></li>
+        <li><a href="#locations">Locations</a></li>
+        <li><a href="#why">Why Us</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </nav>
+    <a href="#contact" class="btn btn-primary">List Your Property</a>
+    <button class="menu-toggle" id="toggle" aria-label="Toggle menu">☰</button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <div class="container">
+      <span class="eyebrow" style="color:#9cc2ff">Houses &amp; apartments for rent</span>
+      <h1>Find a home you'll love, at a price that fits.</h1>
+      <p>Browse verified rentals with clear monthly prices and exact locations. No hidden fees, no stress.</p>
+      <div class="hero-stats">
+        <div><b>1,200+</b><span>Active listings</span></div>
+        <div><b>40+</b><span>Neighborhoods</span></div>
+        <div><b>24 hrs</b><span>Average reply time</span></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="container">
+    <form class="search" id="searchForm" onsubmit="return false">
+      <div class="field">
+        <label for="fLocation">Location</label>
+        <select id="fLocation">
+          <option value="all">All locations</option>
+          <option>Riverside</option>
+          <option>Greenhill</option>
+          <option>Lakeview</option>
+          <option>Downtown</option>
+          <option>Palm Grove</option>
+          <option>Hillcrest</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="fType">Property type</label>
+        <select id="fType">
+          <option value="all">Any type</option>
+          <option>House</option>
+          <option>Apartment</option>
+          <option>Townhouse</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="fPrice">Monthly price</label>
+        <select id="fPrice">
+          <option value="all">Any price</option>
+          <option value="0-800">Under $800</option>
+          <option value="800-1500">$800 – $1,500</option>
+          <option value="1500-99999">$1,500 and above</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" id="searchBtn" type="button">Search rentals</button>
+    </form>
+  </div>
+
+  <section id="listings">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">Featured rentals</span>
+          <h2>Homes available right now</h2>
+        </div>
+        <p>Every listing shows the monthly rent and the neighborhood so you can compare quickly.</p>
+      </div>
+
+      <div class="grid" id="grid">
+
+        <article class="card" data-loc="Riverside" data-type="House" data-price="1850">
+          <div class="photo"><img loading="lazy" src="https://images.unsplash.com/photo-1628624747186-a941c476b7ef?auto=format&fit=crop&w=900&q=80" alt="Modern family house surrounded by green trees"><span class="tag">House</span></div>
+          <div class="body">
+            <div class="price">$1,850 <small>/ month</small></div>
+            <h3>Modern Family House</h3>
+            <div class="loc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s7-6.2 7-12a7 7 0 10-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg>Riverside, Maple Street</div>
+            <div class="specs"><span><b>4</b> beds</span><span><b>3</b> baths</span><span><b>2,100</b> sq ft</span></div>
+          </div>
+        </article>
+
+        <article class="card" data-loc="Greenhill" data-type="House" data-price="1450">
+          <div class="photo"><img loading="lazy" src="https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?auto=format&fit=crop&w=900&q=80" alt="Brown and white house under a clear blue sky"><span class="tag">House</span></div>
+          <div class="body">
+            <div class="price">$1,450 <small>/ month</small></div>
+            <h3>Sunny Garden Home</h3>
+            <div class="loc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s7-6.2 7-12a7 7 0 10-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg>Greenhill, Oak Avenue</div>
+            <div class="specs"><span><b>3</b> beds</span><span><b>2</b> baths</span><span><b>1,650</b> sq ft</span></div>
+          </div>
+        </article>
+
+        <article class="card" data-loc="Downtown" data-type="Apartment" data-price="780">
+          <div class="photo"><img loading="lazy" src="https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?auto=format&fit=crop&w=900&q=80" alt="Bright apartment living room with a large window"><span class="tag">Apartment</span></div>
+          <div class="body">
+            <div class="price">$780 <small>/ month</small></div>
+            <h3>Bright City Apartment</h3>
+            <div class="loc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s7-6.2 7-12a7 7 0 10-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg>Downtown, 5th Avenue</div>
+            <div class="specs"><span><b>1</b> bed</span><span><b>1</b> bath</span><span><b>620</b> sq ft</span></div>
+          </div>
+        </article>
+
+        <article class="card" data-loc="Lakeview" data-type="House" data-price="2400">
+          <div class="photo"><img loading="lazy" src="https://images.unsplash.com/photo-1706808849780-7a04fbac83ef?auto=format&fit=crop&w=900&q=80" alt="Modern house with a swimming pool and lounge chairs"><span class="tag">House</span></div>
+          <div class="body">
+            <div class="price">$2,400 <small>/ month</small></div>
+            <h3>Poolside Modern Villa</h3>
+            <div class="loc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s7-6.2 7-12a7 7 0 10-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg>Lakeview, Shoreline Drive</div>
+            <div class="specs"><span><b>4</b> beds</span><span><b>4</b> baths</span><span><b>2,800</b> sq ft</span></div>
+          </div>
+        </article>
+
+        <article class="card" data-loc="Palm Grove" data-type="Townhouse" data-price="1200">
+          <div class="photo"><img loading="lazy" src="https://images.unsplash.com/photo-1721815693498-cc28507c0ba2?auto=format&fit=crop&w=900&q=80" alt="Two-story townhouse with balconies"><span class="tag">Townhouse</span></div>
+          <div class="body">
+            <div class="price">$1,200 <small>/ month</small></div>
+            <h3>Two-Story Townhouse</h3>
+            <div class="loc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s7-6.2 7-12a7 7 0 10-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg>Palm Grove, Coral Lane</div>
+            <div class="specs"><span><b>3</b> beds</span><span><b>2</b> baths</span><span><b>1,400</b> sq ft</span></div>
+          </div>
+        </article>
+
+        <article class="card" data-loc="Hillcrest" data-type="House" data-price="950">
+          <div class="photo"><img loading="lazy" src="https://images.unsplash.com/photo-1680645944941-da9198d7f6aa?auto=format&fit=crop&w=900&q=80" alt="White house on a green hillside"><span class="tag">House</span></div>
+          <div class="body">
+            <div class="price">$950 <small>/ month</small></div>
+            <h3>Cozy Hillside Cottage</h3>
+            <div class="loc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s7-6.2 7-12a7 7 0 10-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg>Hillcrest, Pine Road</div>
+            <div class="specs"><span><b>2</b> beds</span><span><b>1</b> bath</span><span><b>980</b> sq ft</span></div>
+          </div>
+        </article>
+
+        <article class="card" data-loc="Riverside" data-type="Apartment" data-price="1100">
+          <div class="photo"><img loading="lazy" src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=900&q=80" alt="Furnished apartment living area with couch and armchair"><span class="tag">Apartment</span></div>
+          <div class="body">
+            <div class="price">$1,100 <small>/ month</small></div>
+            <h3>Furnished 2-Bed Apartment</h3>
+            <div class="loc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s7-6.2 7-12a7 7 0 10-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg>Riverside, Harbor Street</div>
+            <div class="specs"><span><b>2</b> beds</span><span><b>1</b> bath</span><span><b>860</b> sq ft</span></div>
+          </div>
+        </article>
+
+        <article class="card" data-loc="Greenhill" data-type="House" data-price="1650">
+          <div class="photo"><img loading="lazy" src="https://images.unsplash.com/photo-1647579350413-a6ada4e480ed?auto=format&fit=crop&w=900&q=80" alt="Large white house with a two-car garage"><span class="tag">House</span></div>
+          <div class="body">
+            <div class="price">$1,650 <small>/ month</small></div>
+            <h3>White House with Garage</h3>
+            <div class="loc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s7-6.2 7-12a7 7 0 10-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg>Greenhill, Cedar Court</div>
+            <div class="specs"><span><b>3</b> beds</span><span><b>2</b> baths</span><span><b>1,900</b> sq ft</span></div>
+          </div>
+        </article>
+
+        <article class="card" data-loc="Downtown" data-type="Apartment" data-price="690">
+          <div class="photo"><img loading="lazy" src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=900&q=80" alt="Tidy studio apartment with furniture"><span class="tag">Apartment</span></div>
+          <div class="body">
+            <div class="price">$690 <small>/ month</small></div>
+            <h3>Compact Studio</h3>
+            <div class="loc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s7-6.2 7-12a7 7 0 10-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg>Downtown, Market Street</div>
+            <div class="specs"><span><b>Studio</b></span><span><b>1</b> bath</span><span><b>420</b> sq ft</span></div>
+          </div>
+        </article>
+
+      </div>
+      <div class="empty" id="empty">No rentals match your search. Try a different location, type, or price range.</div>
+    </div>
+  </section>
+
+  <section class="ranges" id="prices">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">Price ranges</span>
+          <h2>A home for every budget</h2>
+        </div>
+        <p>Pick a monthly range and we'll show you what's available.</p>
+      </div>
+      <div class="range-grid">
+        <div class="range">
+          <span class="eyebrow">Budget</span>
+          <div class="amt">Under $800</div>
+          <p>Studios and 1-bedroom apartments close to transport and daily needs.</p>
+          <a href="#listings" data-range="0-800">View homes →</a>
+        </div>
+        <div class="range">
+          <span class="eyebrow">Mid-range</span>
+          <div class="amt">$800 – $1,500</div>
+          <p>Comfortable 2–3 bedroom houses and townhouses with space to grow.</p>
+          <a href="#listings" data-range="800-1500">View homes →</a>
+        </div>
+        <div class="range">
+          <span class="eyebrow">Premium</span>
+          <div class="amt">$1,500 and up</div>
+          <p>Large family houses and villas with gardens, garages, and pools.</p>
+          <a href="#listings" data-range="1500-99999">View homes →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="locations">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">Popular locations</span>
+          <h2>Explore by neighborhood</h2>
+        </div>
+        <p>From quiet hillsides to lively downtown streets, find the area that suits your lifestyle.</p>
+      </div>
+      <div class="loc-grid">
+        <a class="loc-card" href="#listings" data-area="Riverside"><img loading="lazy" src="https://images.unsplash.com/photo-1628744448840-55bdb2497bd4?auto=format&fit=crop&w=700&q=80" alt="Riverside neighborhood homes"><div><h3>Riverside</h3><span>From $1,100 / month</span></div></a>
+        <a class="loc-card" href="#listings" data-area="Greenhill"><img loading="lazy" src="https://images.unsplash.com/photo-1688573156630-950f631f1c38?auto=format&fit=crop&w=700&q=80" alt="Greenhill neighborhood house"><div><h3>Greenhill</h3><span>From $1,450 / month</span></div></a>
+        <a class="loc-card" href="#listings" data-area="Lakeview"><img loading="lazy" src="https://images.unsplash.com/photo-1706808849777-96e0d7be3bb7?auto=format&fit=crop&w=700&q=80" alt="Lakeview neighborhood house with large yard"><div><h3>Lakeview</h3><span>From $2,400 / month</span></div></a>
+        <a class="loc-card" href="#listings" data-area="Downtown"><img loading="lazy" src="https://images.unsplash.com/photo-1686164748506-4311ba437c24?auto=format&fit=crop&w=700&q=80" alt="Downtown building with balconies"><div><h3>Downtown</h3><span>From $690 / month</span></div></a>
+      </div>
+    </div>
+  </section>
+
+  <section id="why" style="background:#fff;padding-top:0">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">Why BlueNest</span>
+          <h2>Renting made simple</h2>
+        </div>
+      </div>
+      <div class="why-grid">
+        <div class="why"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4z"/><path d="M9 12l2 2 4-4"/></svg></div><h3>Verified listings</h3><p>Every property is checked so what you see is what you get.</p></div>
+        <div class="why"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div><h3>Fast replies</h3><p>Message owners directly and book a viewing within a day.</p></div>
+        <div class="why"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1v22"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div><h3>Clear pricing</h3><p>Transparent monthly rent with no surprise fees at move-in.</p></div>
+        <div class="why"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s7-6.2 7-12a7 7 0 10-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg></div><h3>Great locations</h3><p>Homes near schools, transport, shops, and workplaces.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact" style="padding-top:0">
+    <div class="container">
+      <div class="cta">
+        <div>
+          <h2>Ready to find your next home or list your property?</h2>
+          <p>Talk to our team and get matched with the right rental today.</p>
+        </div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap">
+          <a class="btn btn-light" href="mailto:hello@bluenest.example">Contact us</a>
+          <a class="btn" style="border:2px solid #fff;color:#fff" href="#listings">Browse homes</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="container">
+    <div class="foot">
+      <div>
+        <a href="#top" class="logo" style="color:#fff;margin-bottom:12px">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg>
+          BlueNest
+        </a>
+        <p style="font-size:.93rem;max-width:300px">Simple, transparent house and apartment rentals.</p>
+      </div>
+      <div><h4>Explore</h4><ul><li><a href="#listings">Properties</a></li><li><a href="#prices">Price ranges</a></li><li><a href="#locations">Locations</a></li></ul></div>
+      <div><h4>Company</h4><ul><li><a href="#why">Why us</a></li><li><a href="#contact">Contact</a></li><li><a href="#contact">List a property</a></li></ul></div>
+      <div><h4>Contact</h4><ul><li>hello@bluenest.example</li><li>+1 (555) 010-2030</li><li>Mon – Sat, 9am – 6pm</li></ul></div>
+    </div>
+    <div class="copy">© <span id="year"></span> BlueNest Rentals. All rights reserved. Sample listings for demonstration.</div>
+  </div>
+</footer>
+
+<script>
+  // Mobile menu
+  const menu = document.getElementById('menu');
+  document.getElementById('toggle').addEventListener('click', () => menu.classList.toggle('open'));
+  menu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => menu.classList.remove('open')));
+
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  // Filtering
+  const cards = [...document.querySelectorAll('#grid .card')];
+  const fLocation = document.getElementById('fLocation');
+  const fType = document.getElementById('fType');
+  const fPrice = document.getElementById('fPrice');
+  const empty = document.getElementById('empty');
+
+  function applyFilters(){
+    let shown = 0;
+    const [min, max] = fPrice.value === 'all' ? [0, Infinity] : fPrice.value.split('-').map(Number);
+    cards.forEach(c => {
+      const price = Number(c.dataset.price);
+      const ok =
+        (fLocation.value === 'all' || c.dataset.loc === fLocation.value) &&
+        (fType.value === 'all' || c.dataset.type === fType.value) &&
+        price >= min && price < max;
+      c.style.display = ok ? '' : 'none';
+      if (ok) shown++;
+    });
+    empty.style.display = shown ? 'none' : 'block';
+  }
+
+  document.getElementById('searchBtn').addEventListener('click', () => {
+    applyFilters();
+    document.getElementById('listings').scrollIntoView({behavior:'smooth'});
+  });
+  [fLocation, fType, fPrice].forEach(el => el.addEventListener('change', applyFilters));
+
+  // Price range cards
+  document.querySelectorAll('[data-range]').forEach(a => a.addEventListener('click', () => {
+    fPrice.value = a.dataset.range; applyFilters();
+  }));
+
+  // Location cards
+  document.querySelectorAll('[data-area]').forEach(a => a.addEventListener('click', () => {
+    fLocation.value = a.dataset.area; applyFilters();
+  }));
+
+  // Fallback if a photo fails to load
+  document.querySelectorAll('img').forEach(img => img.addEventListener('error', () => {
+    img.style.display = 'none';
+  }));
+</script>
+</body>
+</html>
